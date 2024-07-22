@@ -1,90 +1,91 @@
 import { useState, useEffect } from 'react'
-import Note from './components/Note'
+import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
-import noteService from './services/notes'
+import blogService from './services/blogs'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
-  const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
-  const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [blogs, setBlogs] = useState([])
+  const [newTitle, setNewTitle] = useState('')
+  const [newAuthor, setNewAuthor] = useState('')
+  const [newUrl, setNewUrl] = useState('')
+  const [newLikes, setNewLikes] = useState(0)
+  const [notification, setNotification] = useState(null)
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    noteService
+    blogService
       .getAll()
-      .then(initialNotes => {
-        setNotes(initialNotes)
+      .then(initialBlogs => {
+        setBlogs(initialBlogs)
       })
   }, [])
 
-  const addNote = (event) => {
+  const addBlog = (event) => {
     event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      important: Math.random() > 0.5,
+    const blogObject = {
+      title: newTitle,
+      author: newAuthor,
+      url: newUrl,
+      likes: newLikes,
     }
   
-    noteService
-      .create(noteObject)
-        .then(returnedNote => {
-        setNotes(notes.concat(returnedNote))
-        setNewNote('')
-      })
-  }
-
-  const toggleImportanceOf = id => {
-    const note = notes.find(n => n.id === id)
-    const changedNote = { ...note, important: !note.important }
-  
-    noteService
-      .update(id, changedNote)
-        .then(returnedNote => {
-        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setNewTitle('')
+        setNewAuthor('')
+        setNewUrl('')
+        setNewLikes(0)
       })
       .catch(error => {
-        setErrorMessage(
-          `Note '${note.content}' was already removed from server`
-        )
+        setNotification('Failed to add blog')
+        setIsError(true);
         setTimeout(() => {
-          setErrorMessage(null)
+          setNotification(null)
         }, 5000)
       })
   }
 
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
+  const handleTitleChange = (event) => {
+    setNewTitle(event.target.value)
   }
 
-  const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important)
+  const handleAuthorChange = (event) => {
+    setNewAuthor(event.target.value)
+  }
+
+  const handleUrlChange = (event) => {
+    setNewUrl(event.target.value)
+  }
+
+  const handleLikesChange = (event) => {
+    setNewLikes(event.target.value)
+  }
 
   return (
     <div>
-      <h1>Notes</h1>
-      <Notification message={errorMessage} />
-      <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all' }
-        </button>
-      </div>      
+      <h1>Blogs</h1>
+      <Notification message={notification} isError={isError} />
       <ul>
-        {notesToShow.map(note => 
-          <Note
-            key={note.id}
-            note={note}
-            toggleImportance={() => toggleImportanceOf(note.id)}
+        {blogs.map(blog => 
+          <Blog
+            key={blog.id}
+            blog={blog}
           />
         )}
       </ul>
-      <form onSubmit={addNote}>
-      <input
-          value={newNote}
-          onChange={handleNoteChange}
-        />
-        <button type="submit">save</button>
-      </form>
+      <BlogForm
+       addBlog={addBlog}
+       newTitle={newTitle}
+       handleTitleChange={handleTitleChange}
+       newAuthor={handleAuthorChange}
+       newUrl={newUrl}
+       handleUrlChange={handleUrlChange}
+       newLikes={newLikes}
+       handleLikesChange={handleLikesChange} />
       <Footer />
     </div>
   )
