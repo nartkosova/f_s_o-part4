@@ -31,13 +31,34 @@ const dummy = (blogs) => {
   
     return topAuthor;
   };
+  const mostLikes = (blogs) => {
+    if (blogs.length === 0) return {}; 
+  
+  
+    const authorLikes = blogs.reduce((acc, blog) => {
+      if (acc[blog.author]) {
+        acc[blog.author] += blog.likes; 
+      } else {
+        acc[blog.author] = blog.likes; 
+      }
+      return acc;
+    }, {});
+  
+   
+    const mostLikedAuthor = Object.keys(authorLikes).reduce((max, author) => {
+      return authorLikes[author] > max.likes ? { author, likes: authorLikes[author] } : max;
+    }, { author: '', likes: 0 });
+  
+    return mostLikedAuthor;
+  };
   
   
   module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
   }
   
   
