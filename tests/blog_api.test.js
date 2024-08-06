@@ -135,6 +135,27 @@ test('blog posts have an id property, not _id', async () => {
     assert.strictEqual(titles.length, blogsAtStart.body.length - 1);
     assert.strictEqual(titles.includes(blogToDelete.title), false);
   });
+  test('update blog', async () => {
+    const blogsAtStart = await api.get('/api/blogs');
+    const blogToUpdate = blogsAtStart.body[0];
+    const updatedBlog = {
+      title: blogToUpdate.title,
+      author: blogToUpdate.author,
+      url: blogToUpdate.url,
+      likes: blogToUpdate.likes + 1, 
+    };
+  
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtEnd = await api.get('/api/blogs');
+    const updatedBlogFromDb = blogsAtEnd.body.find(blog => blog.id === blogToUpdate.id);
+  
+    assert.strictEqual(updatedBlogFromDb.likes, blogToUpdate.likes + 1);
+  });
   
 after(async () => {
   await mongoose.connection.close() 

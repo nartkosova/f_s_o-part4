@@ -56,6 +56,23 @@ blogsRouter.delete('/:id', async (request, response) => {
     response.status(500).json({ error: 'Failed to delete the blog' });
   }
 });
+blogsRouter.put('/:id', async (request, response) => {
+  try {
+    const { title, author, url, likes } = request.body;
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      { title, author, url, likes },
+      { new: true, runValidators: true }
+    );
 
+    if (updatedBlog) {
+      response.json(updatedBlog);
+    } else {
+      response.status(404).json({ error: 'Blog not found' });
+    }
+  } catch (error) {
+    response.status(400).json({ error: 'Bad Request' });
+  }
+});
 
 module.exports = blogsRouter
