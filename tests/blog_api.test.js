@@ -49,7 +49,27 @@ test('blog posts have an id property, not _id', async () => {
       console.log('Blog Posts:', JSON.stringify(blogs, null, 2))
     })
   })
-
+  test('a new blog post is successfully created', async () => {
+    const newBlog = {
+      title: 'New Blog',
+      author: 'New Author',
+      url: 'http://example.com/new',
+      likes: 5,
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+  
+    const blogsAtEnd = await Blog.find({})
+    assert.strictEqual(blogsAtEnd.length, 3)  
+  
+    const titles = blogsAtEnd.map(blog => blog.title)
+    assert.ok(titles.includes('New Blog'))
+    console.log('Blogs after POST request:', JSON.stringify(blogsAtEnd, null, 2))
+  })
+  
 after(async () => {
   await mongoose.connection.close() 
 })

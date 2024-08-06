@@ -81,7 +81,8 @@ const App = () => {
        addBlog={addBlog}
        newTitle={newTitle}
        handleTitleChange={handleTitleChange}
-       newAuthor={handleAuthorChange}
+       newAuthor={newAuthor}
+       handleAuthorChange={handleAuthorChange}
        newUrl={newUrl}
        handleUrlChange={handleUrlChange}
        newLikes={newLikes}

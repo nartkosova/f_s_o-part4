@@ -22,5 +22,27 @@ blogsRouter.get('/:id', async (request, response, next) => {
     next(error)
   }
 })
+blogsRouter.post('/', async (request, response) => {
+  try {
+    const body = request.body;
+    
+    if (!body.title || !body.url) {
+      return response.status(400).json({ error: 'Title or URL missing' });
+    }
+
+    const blog = new Blog({
+      title: body.title,
+      author: body.author || 'Unknown',
+      url: body.url,
+      likes: body.likes || 0,
+    });
+
+    const savedBlog = await blog.save();
+    response.status(201).json(savedBlog);
+  } catch (error) {
+    response.status(500).json({ error: 'Failed to save the blog' });
+  }
+});
+
 
 module.exports = blogsRouter
