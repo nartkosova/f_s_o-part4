@@ -115,6 +115,26 @@ test('blog posts have an id property, not _id', async () => {
       .expect(400)
       .expect('Content-Type', /application\/json/);
   });
+  test('delete blog', async () => {
+    const blogsAtStart = await api.get('/api/blogs')
+    console.log('Blogs at start:', blogsAtStart.body)
+  
+    const blogToDelete = blogsAtStart.body[0]
+    console.log('Blog to delete:', blogToDelete)
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204);
+
+   const blogsAtEnd = await api.get('/api/blogs')
+  console.log('Blogs at end:', blogsAtEnd.body)
+
+  const titles = blogsAtEnd.body.map(blog => blog.title)
+  console.log('Titles at end:', titles)
+  
+    assert.strictEqual(titles.length, blogsAtStart.body.length - 1);
+    assert.strictEqual(titles.includes(blogToDelete.title), false);
+  });
   
 after(async () => {
   await mongoose.connection.close() 
