@@ -88,6 +88,33 @@ test('blog posts have an id property, not _id', async () => {
   
     assert.strictEqual(createdBlog.likes, 0);
   });
+  test('responds with 400 if title is missing', async () => {
+    const newBlog = {
+      author: 'Author without title',
+      url: 'http://example.com/missin-title',
+      likes: 5,
+    };
+  
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+  });
+  
+  test('responds with 400 if url is missing', async () => {
+    const newBlog = {
+      title: 'Blog without URL',
+      author: 'Author without URL',
+      likes: 5,
+    };
+  
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+  });
   
 after(async () => {
   await mongoose.connection.close() 
