@@ -13,7 +13,7 @@ beforeEach(async () => {
   const initialBlogs = [
     {
       title: 'Blog 1',
-      author: 'Author 1',
+      author: 'Author KI',
       url: 'http://example.com/1',
       likes: 10,
     },
@@ -69,6 +69,25 @@ test('blog posts have an id property, not _id', async () => {
     assert.ok(titles.includes('New Blog'))
     console.log('Blogs after POST request:', JSON.stringify(blogsAtEnd, null, 2))
   })
+  test('likes default to 0 if not provided', async () => {
+    const newBlog = {
+      title: 'Blog with no likes',
+      author: 'Unknown Author',
+      url: 'http://example.com/no-likes',
+    };
+  
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+  
+    const createdBlog = response.body;
+  
+    console.log('Created blog:', createdBlog);
+  
+    assert.strictEqual(createdBlog.likes, 0);
+  });
   
 after(async () => {
   await mongoose.connection.close() 
