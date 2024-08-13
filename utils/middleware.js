@@ -33,8 +33,7 @@ const tokenExtractor = (request, response, next) => {
     request.token = authorization.substring(7);
   } else {
     request.token = null;
-  }
-  console.log('Extracted token:', request.token); 
+  } 
   next();
 };
 module.exports = {
