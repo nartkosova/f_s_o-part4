@@ -56,7 +56,6 @@ blogsRouter.post('/', async (request, response) => {
       likes: body.likes || 0,
       user: user.id
     });
-    
     const savedBlog = await blog.save();
     user.blogs = user.blogs.concat(savedBlog._id);
     await user.save();
@@ -69,29 +68,28 @@ blogsRouter.post('/', async (request, response) => {
 });
 blogsRouter.delete('/:id', async (request, response) => {
   try {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET);
     const user = request.user;
 
-    if (!user||blog.user.toString() !== user.id.toString()) {
-      return response.status(401).json({error: 'unathorized user'})
-    }
-
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' })
+    if (!user) {
+      return response.status(401).json({ error: 'User not found' })
     }
 
     const blog = await Blog.findById(request.params.id)
+
     if (!blog) {
-      return response.status(404).json({ error: 'blog not found' })
+      return response.status(404).json({ error: 'Blog not found' })
     }
-    
-    if (blog.user.toString() !== decodedToken.id) {
-      return response.status(403).json({ error: 'you can\'t delete another users blog' })
+
+    if (blog.user.toString() !== user.id.toString()) {
+      return response.status(403).json({ error: 'Unauthorized to delete this blog' })
     }
+
     await Blog.findByIdAndDelete(request.params.id)
     response.status(204).end()
   } catch (error) {
-    response.status(500).json({ error: 'failed to delete the blog' })
+    console.error(error)
+    response.status(500).json({ error: 'Failed to delete the blog' })
   }
 })
 blogsRouter.put('/:id', async (request, response) => {
@@ -101,7 +99,7 @@ blogsRouter.put('/:id', async (request, response) => {
       request.params.id,
       { title, author, url, likes },
       { new: true, runValidators: true }
-    );
+    ).populate('user', { username: 1, name: 1, id: 1 })
 
     if (updatedBlog) {
       response.json(updatedBlog);

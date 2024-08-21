@@ -59,12 +59,14 @@ test('blog posts have an id property, not _id', async () => {
       url: 'http://example.com/new',
       likes: 5,
     }
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-  
+    const token = process.env.token;
+     await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
     const blogsAtEnd = await Blog.find({})
     assert.strictEqual(blogsAtEnd.length, 3)  
   

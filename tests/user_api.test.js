@@ -70,7 +70,7 @@ describe('when creating a new user', () => {
     const newUser = {
       username: 'validUsername',
       name: 'Short Password',
-      password: '12',
+      password: '1234',
     }
 
     const result = await api
@@ -87,8 +87,8 @@ describe('when creating a new user', () => {
 
   test('creation fails with status 400 and message if username is not unique', async () => {
     const newUser = {
-      username: 'root',
-      name: 'Superuser',
+      username: 'root1',
+      name: 'Superuser1',
       password: '123456',
     }
 

@@ -7,7 +7,7 @@
     "start": "NODE_ENV=production node index.js",
     "dev": "NODE_ENV=development nodemon index.js",
     "test": "NODE_ENV=test node --test",
-    "build:ui": "rm -rf dist && cd ../blogapp/src && npm run build && cp -r dist ../f.s.o_part4",
+    "build:ui": "rm -rf dist && cd ../part5/f.s.o_part5/dist && npm run build && cp -r dist ../f.s.o_part4",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
     "lint": "eslint ."
   },
