@@ -4,7 +4,7 @@ const app = require('../app')
 const Blog = require('../models/blog') 
 const { test, after, beforeEach } = require('node:test')
 const assert = require('assert')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 
 const helper = require('./test_helper')
 
